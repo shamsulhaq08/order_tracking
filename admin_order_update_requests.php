@@ -5,8 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
-
 // Get session values safely
 if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     $user_id = (int)$_SESSION['user_id'];
@@ -34,8 +32,6 @@ $result = $conn->query($sql);
     <meta charset="utf-8" />
     <title> Order Update Requests </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Drezoc - Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="MyraStudio" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- App favicon -->
