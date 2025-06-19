@@ -93,8 +93,19 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                                         </script>       <li class="dropdown notification-list">
                                            <a class="nav-link dropdown-toggle waves-effect waves-dark arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                                               <i class="mdi mdi-bell font-size-24"></i>
-                                              <span class="badge bg-danger rounded-circle noti-icon-badge"><?php echo $alert_count; ?></span>
-                                           </a>
+                                            <?php if ($alert_count > 0): ?>
+                                                <span class="badge bg-danger rounded-circle noti-icon-badge"><?php echo $alert_count; ?></span>
+                                                <audio id="alert-audio" src="http://localhost/order_tracking/assets/beep-07.mp3" preload="auto"></audio>
+                                                <script>
+                                                    document.addEventListener('DOMContentLoaded', function() {
+                                                        // Play sound only if there are new alerts
+                                                        var audio = document.getElementById('alert-audio');
+                                                        if (audio) {
+                                                            audio.play().catch(function(){});
+                                                        }
+                                                    });
+                                                </script>
+                                            <?php endif; ?>       </a>
                                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg py-0" style="min-width: 400px;">
                                               <div class="p-2 border-top-0 border-start-0 border-end-0 border-dashed border">
                                                  <div class="row align-items-center">
