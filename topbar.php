@@ -25,8 +25,6 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                   <a href="index.php" class="logo-light">
                     <h4 style="color: white;">Tracking</h4>
                 </a>
-
-                
             </div>
 
                         <!-- Sidebar Menu Toggle Button -->
@@ -35,9 +33,9 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                         </button>
                     </div>
 
-                    <ul class="topbar-menu d-flex align-items-center gap-2">
+                                    <ul class="topbar-menu d-flex align-items-center gap-2">
 
-                        <?php
+                                         <?php
                                         $current_page = basename($_SERVER['PHP_SELF']);
                                         $hide_notifications = ($current_page === 'admin_order_update_requests.php' || $current_page === 'order_view.php' || $current_page === 'order.php' || $current_page === 'staff.php' || $current_page === 'bank_account.php' || $current_page === 'register.php' || $current_page === 'bank_account_edit.php' || $current_page === 'manage_rights.php' || $current_page === 'order_edit.php');
                                         ?>
@@ -105,7 +103,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                                                         }
                                                     });
                                                 </script>
-                                            <?php endif; ?>       </a>
+                                            <?php endif; ?> </a>
                                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg py-0" style="min-width: 400px;">
                                               <div class="p-2 border-top-0 border-start-0 border-end-0 border-dashed border">
                                                  <div class="row align-items-center">
@@ -166,9 +164,12 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                                             </a>
                                             <?php endif; ?>       </div>
                                         </li>
-                                         <?php endif; ?>       <li class="nav-link waves-effect waves-dark" id="theme-mode">
-                            <i class="bx bx-moon font-size-24"></i>
-                        </li>
+                                         <?php endif; ?>       
+                         
+                            
+                            <li class="nav-link waves-effect waves-dark" id="theme-mode">
+                                <i class="bx bx-moon font-size-24"></i>
+                            </li>
 
                         <li class="nav-item d-flex align-items-center">
                             <i class="mdi mdi-account-circle font-size-24 me-1"></i>

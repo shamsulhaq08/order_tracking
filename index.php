@@ -1,13 +1,9 @@
-
-
 <?php
 include 'db_config.php'; // Include your database configuration file
 require_once 'auth_helper.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-
 
 // Get session values safely
 if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
@@ -80,7 +76,9 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                     <div class="py-3 py-lg-4">
                         <div class="row">
                             <div class="col-lg-6">
+                              
                                 <h4 class="page-title mb-0">Dashboard</h4>
+                             
                             </div>
                             <div class="col-lg-6">
                                <div class="d-none d-lg-block">
@@ -120,41 +118,24 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                                 color: #fff;
                             }
                         </style>
-
-                        <div id="welcomeModal" class="modal fade" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content border-0 shadow-lg">
-                                    <div class="modal-body text-center py-5">
-                                        <span class="avatar bg-white text-primary rounded-circle mb-3 shadow" style="width:72px;height:72px;display:inline-flex;align-items:center;justify-content:center;font-size:2.5rem;border:4px solid #fff;">
-                                            <i class="mdi mdi-account"></i>
-                                        </span>
-                                        <h5 class="mb-1 text-white" style="letter-spacing:1px;">Welcome,</h5>
-                                        <h4 class="mb-0 fw-bold text-white" style="text-shadow:0 2px 8px rgba(0,0,0,0.15);"><?php echo htmlspecialchars($username); ?></h4>
-                                    </div>
-                                </div>
+<!-- 
+                        <?php //if (isset($username)): ?>
+                            <div class="alert alert-primary alert-dismissible fade show" role="alert" style="margin-top: 30px;">
+                                <strong>Welcome<?php //echo ', ' . htmlspecialchars($username); ?>!</strong> 
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
-                        </div>
-                        <div id="welcomeModalBackdrop"></div>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var modal = new bootstrap.Modal(document.getElementById('welcomeModal'));
-                                var backdrop = document.getElementById('welcomeModalBackdrop');
-                                // Add blur to body and show custom backdrop
-                                document.body.classList.add('modal-blur');
-                                backdrop.style.display = 'block';
-                                modal.show();
-                                setTimeout(function() {
-                                    modal.hide();
-                                    document.body.classList.remove('modal-blur');
-                                    backdrop.style.display = 'none';
-                                }, 1000); // 1 second
-                                // Remove blur if modal is closed by user (failsafe)
-                                document.getElementById('welcomeModal').addEventListener('hidden.bs.modal', function() {
-                                    document.body.classList.remove('modal-blur');
-                                    backdrop.style.display = 'none';
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    var alertEl = document.querySelector('.alert');
+                                    if(alertEl){
+                                        setTimeout(function() {
+                                            var alert = new bootstrap.Alert(alertEl);
+                                            alert.close();
+                                        }, 10000); // 10 seconds
+                                    }
                                 });
-                            });
-                        </script>
+                            </script>
+                        <?php //endif; ?> -->
 
 
                     <div class="row">
