@@ -159,98 +159,254 @@ while ($row = $result->fetch_assoc()) {
                             </button> -->
                         </div>
                     </form>
-                    <!-- Desktop Table -->
-                    <div class="d-none d-md-block">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Field</th>
-                                    <th>Old Value</th>
-                                    <th>New Value</th>
-                                    <th>User</th>
-                                    <th>Date</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <?php foreach ($requests as $row): ?>
-                                <tr>
-                                    <td style="text-transform: capitalize;"><?= htmlspecialchars($row['field_name']) ?></td>
-                                    <td style="text-transform: capitalize;"><?= htmlspecialchars($row['old_value']) ?></td>
-                                    <td style="text-transform: capitalize;"><strong><?= htmlspecialchars($row['new_value']) ?></strong></td>
-                                    <td>
-                                        <?php
-                                        // Fetch username logic
-                                        $user_name = 'Unknown';
-                                        if (!empty($row['requested_by'])) {
-                                                $requested_by_user_id = $conn->real_escape_string($row['requested_by']);
-                                                $user_sql = "SELECT username FROM users WHERE user_id = '$requested_by_user_id' LIMIT 1";
-                                                $user_result = $conn->query($user_sql);
-                                                if ($user_result && $user_row = $user_result->fetch_assoc()) {
-                                                    $user_name = htmlspecialchars($user_row['username']);
-                                                } else {
-                                                    $user_name = $row['requested_by'];
-                                                }
-                                        }
-                                        echo $user_name;
-                                        ?>
-                                    </td>
-                                    <td><?= date('j F Y', strtotime($row['requested_at'])) ?></td>
-                                    <td>
-                                        <form action="approve_order_change.php" method="post" style="display:inline;">
-                                                <input type="hidden" name="request_id" value="<?= $row['id'] ?>">
-                                                <input type="submit" name="action" value="Approve" class="btn btn-success btn-sm" onclick="return confirm('Approve this change?')">
-                                        </form>
-                                        <form action="reject_order_change.php" method="post" style="display:inline;">
-                                                <input type="hidden" name="request_id" value="<?= $row['id'] ?>">
-                                                <input type="submit" name="action" value="Reject" class="btn btn-danger btn-sm" onclick="return confirm('Reject this change?')">
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Mobile Card View -->
-                    <div class="d-block d-md-none">
-                        <?php foreach ($requests as $row): ?>
-                            <div class="card mb-3">
-                                <div class="card-body p-2">
-                                    <p><strong>Field:</strong> <?= htmlspecialchars($row['field_name']) ?></p>
-                                    <p><strong>Old Value:</strong> <?= htmlspecialchars($row['old_value']) ?></p>
-                                    <p><strong>New Value:</strong> <span class="text-success"><?= htmlspecialchars($row['new_value']) ?></span></p>
-                                    <p>
-                                        <strong>Requested By:</strong>
-                                        <?php
-                                        $user_name = 'Unknown';
-                                        if (!empty($row['requested_by'])) {
-                                                $requested_by_user_id = $conn->real_escape_string($row['requested_by']);
-                                                $user_sql = "SELECT username FROM users WHERE user_id = '$requested_by_user_id' LIMIT 1";
-                                                $user_result = $conn->query($user_sql);
-                                                if ($user_result && $user_row = $user_result->fetch_assoc()) {
-                                                    $user_name = htmlspecialchars($user_row['username']);
-                                                } else {
-                                                    $user_name = $row['requested_by'];
-                                                }
-                                        }
-                                        echo $user_name;
-                                        ?>
-                                    </p>
-                                    <p><strong>Requested At:</strong> <?= date('g:i A, j F Y', strtotime($row['requested_at'])) ?></p>
-                                    <div class="d-flex gap-2">
-                                        <form action="approve_order_change.php" method="post" style="display:inline;">
-                                                <input type="hidden" name="request_id" value="<?= $row['id'] ?>">
-                                                <input type="submit" name="action" value="Approve" class="btn btn-success btn-sm" onclick="return confirm('Approve this change?')">
-                                        </form>
-                                        <form action="reject_order_change.php" method="post" style="display:inline;">
-                                                <input type="hidden" name="request_id" value="<?= $row['id'] ?>">
-                                                <input type="submit" name="action" value="Reject" class="btn btn-danger btn-sm" onclick="return confirm('Reject this change?')">
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
+                  <!-- Desktop Table -->
+<div class="d-none d-md-block">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Old Value</th>
+                <th>New Value</th>
+                <th>User</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+
+        <tbody>
+        <?php
+        // Field label mapping
+        $field_labels = [
+            'order_date'        => 'Order Date',
+            'delivery_date'     => 'Delivery Date',
+            'order_time'        => 'Order Time',
+            'customer_name'     => 'Customer Name',
+            'contact'           => 'Contact',
+            'customer_address'  => 'Customer Address',
+            'order_maker_id'    => 'Order Maker',
+            'order_source'      => 'Order Source',
+            'source_other_text' => 'Source (Other)',
+            'payment'           => 'Payment',
+            'bank_detail'       => 'Bank Detail',
+            'ac_detail'         => 'Account Detail',
+            'card_detail'       => 'Card Detail',
+            'transaction_id'    => 'Transaction ID',
+            'online_amount'     => 'Online Amount',
+            'card_amount'       => 'Card Amount',
+            'cash_payment'      => 'Cash Payment',
+            'total'             => 'Total',
+            'advance'           => 'Advance',
+            'remaining'         => 'Remaining',
+            'description'       => 'Description',
+            'file_media'        => 'File/Media',
+            'pos_bank_detail'   => 'POS Bank Detail',
+            'reason'            => 'Reason'
+        ];
+        ?>
+
+        <?php foreach ($requests as $row): ?>
+            <tr>
+                <td style="text-transform: capitalize;">
+                    <?= htmlspecialchars($field_labels[$row['field_name']] ?? $row['field_name']) ?>
+                </td>
+
+                <?php
+                $old_value_display = htmlspecialchars($row['old_value']);
+                $new_value_display = htmlspecialchars($row['new_value']);
+
+                // If the field is 'order_maker_id', fetch staff names
+                if ($row['field_name'] === 'order_maker_id') {
+                    $old_name = $row['old_value'];
+                    $new_name = $row['new_value'];
+                    $old_staff_name = '';
+                    $new_staff_name = '';
+
+                    // Fetch old staff name
+                    if (!empty($old_name) && ctype_digit($old_name)) {
+                        $staff_sql = "SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM staff WHERE id = ?";
+                        $stmt = $conn->prepare($staff_sql);
+                        $stmt->bind_param("i", $old_name);
+                        $stmt->execute();
+                        $stmt->bind_result($full_name);
+                        if ($stmt->fetch()) {
+                            $old_staff_name = $full_name;
+                        }
+                        $stmt->close();
+                    }
+
+                    // Fetch new staff name
+                    if (!empty($new_name) && ctype_digit($new_name)) {
+                        $staff_sql = "SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM staff WHERE id = ?";
+                        $stmt = $conn->prepare($staff_sql);
+                        $stmt->bind_param("i", $new_name);
+                        $stmt->execute();
+                        $stmt->bind_result($full_name);
+                        if ($stmt->fetch()) {
+                            $new_staff_name = $full_name;
+                        }
+                        $stmt->close();
+                    }
+
+                    $old_value_display = htmlspecialchars($old_staff_name !== '' ? $old_staff_name : ($old_name !== '' ? $old_name : 'N/A'));
+                    $new_value_display = htmlspecialchars($new_staff_name !== '' ? $new_staff_name : ($new_name !== '' ? $new_name : 'N/A'));
+                }
+                ?>
+
+                <td style="text-transform: capitalize;"><?= $old_value_display ?></td>
+                <td style="text-transform: capitalize;"><strong class="text-success"><?= $new_value_display ?></strong></td>
+
+                <td>
+                    <?php
+                    // Fetch username logic
+                    $user_name = 'Unknown';
+                    if (!empty($row['requested_by'])) {
+                        $requested_by_user_id = $conn->real_escape_string($row['requested_by']);
+                        $user_sql = "SELECT username FROM users WHERE user_id = '$requested_by_user_id' LIMIT 1";
+                        $user_result = $conn->query($user_sql);
+                        if ($user_result && $user_row = $user_result->fetch_assoc()) {
+                            $user_name = htmlspecialchars($user_row['username']);
+                        } else {
+                            $user_name = $row['requested_by'];
+                        }
+                    }
+                    echo $user_name;
+                    ?>
+                </td>
+
+                <td><?= date('j F Y', strtotime($row['requested_at'])) ?></td>
+
+                <td>
+                    <form action="approve_order_change.php" method="post" style="display:inline;">
+                        <input type="hidden" name="request_id" value="<?= $row['id'] ?>">
+                        <input type="submit" name="action" value="Approve" class="btn btn-success btn-sm" onclick="return confirm('Approve this change?')">
+                    </form>
+                    <form action="reject_order_change.php" method="post" style="display:inline;">
+                        <input type="hidden" name="request_id" value="<?= $row['id'] ?>">
+                        <input type="submit" name="action" value="Reject" class="btn btn-danger btn-sm" onclick="return confirm('Reject this change?')">
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+        </table>
+        </div>
+
+    <!-- Mobile Card View -->
+    <div class="d-block d-md-none">
+        <?php foreach ($requests as $row): ?>
+        <div class="card mb-3">
+            <div class="card-body p-2">
+            <?php
+            // Field label mapping (same as desktop)
+            $field_labels = [
+                'order_date'        => 'Order Date',
+                'delivery_date'     => 'Delivery Date',
+                'order_time'        => 'Order Time',
+                'customer_name'     => 'Customer Name',
+                'contact'           => 'Contact',
+                'customer_address'  => 'Customer Address',
+                'order_maker_id'    => 'Order Maker',
+                'order_source'      => 'Order Source',
+                'source_other_text' => 'Source (Other)',
+                'payment'           => 'Payment',
+                'bank_detail'       => 'Bank Detail',
+                'ac_detail'         => 'Account Detail',
+                'card_detail'       => 'Card Detail',
+                'transaction_id'    => 'Transaction ID',
+                'online_amount'     => 'Online Amount',
+                'card_amount'       => 'Card Amount',
+                'cash_payment'      => 'Cash Payment',
+                'total'             => 'Total',
+                'advance'           => 'Advance',
+                'remaining'         => 'Remaining',
+                'description'       => 'Description',
+                'file_media'        => 'File/Media',
+                'pos_bank_detail'   => 'POS Bank Detail',
+                'reason'            => 'Reason'
+            ];
+            ?>
+            <p><strong>Field:</strong> <?= htmlspecialchars($field_labels[$row['field_name']] ?? $row['field_name']) ?></p>
+
+            <?php
+            // If the field is 'order_maker_id', fetch the staff name for old and new values
+            if ($row['field_name'] === 'order_maker_id') {
+                $old_name = $row['old_value'];
+                $new_name = $row['new_value'];
+                $old_staff_name = '';
+                $new_staff_name = '';
+
+                // Get old staff name
+                if (!empty($old_name) && ctype_digit($old_name)) {
+                $staff_sql = "SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM staff WHERE id = ?";
+                $stmt = $conn->prepare($staff_sql);
+                $stmt->bind_param("i", $old_name);
+                $stmt->execute();
+                $stmt->bind_result($full_name);
+                if ($stmt->fetch()) {
+                    $old_staff_name = $full_name;
+                }
+                $stmt->close();
+                }
+
+                // Get new staff name
+                if (!empty($new_name) && ctype_digit($new_name)) {
+                $staff_sql = "SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM staff WHERE id = ?";
+                $stmt = $conn->prepare($staff_sql);
+                $stmt->bind_param("i", $new_name);
+                $stmt->execute();
+                $stmt->bind_result($full_name);
+                if ($stmt->fetch()) {
+                    $new_staff_name = $full_name;
+                }
+                $stmt->close();
+                }
+                ?>
+                <p><strong>Old Value:</strong> <?= htmlspecialchars($old_staff_name !== '' ? $old_staff_name : ($old_name !== '' ? $old_name : 'N/A')) ?></p>
+                <p><strong>New Value:</strong> <span class="text-success"><?= htmlspecialchars($new_staff_name !== '' ? $new_staff_name : ($new_name !== '' ? $new_name : 'N/A')) ?></span></p>
+                <?php
+            } else {
+                ?>
+                <p><strong>Old Value:</strong> <?= htmlspecialchars($row['old_value']) ?></p>
+                <p><strong>New Value:</strong> <span class="text-success"><?= htmlspecialchars($row['new_value']) ?></span></p>
+                <?php
+            }
+            ?>
+
+            <p>
+                <strong>Requested By:</strong>
+                <?php
+                $user_name = 'Unknown';
+                if (!empty($row['requested_by'])) {
+                $requested_by_user_id = $conn->real_escape_string($row['requested_by']);
+                $user_sql = "SELECT username FROM users WHERE user_id = '$requested_by_user_id' LIMIT 1";
+                $user_result = $conn->query($user_sql);
+                if ($user_result && $user_row = $user_result->fetch_assoc()) {
+                    $user_name = htmlspecialchars($user_row['username']);
+                } else {
+                    $user_name = $row['requested_by'];
+                }
+                }
+                echo $user_name;
+                ?>
+            </p>
+            <p><strong>Requested At:</strong> <?= date('g:i A, j F Y', strtotime($row['requested_at'])) ?></p>
+
+            <div class="d-flex gap-2">
+                <form action="approve_order_change.php" method="post" style="display:inline;">
+                <input type="hidden" name="request_id" value="<?= $row['id'] ?>">
+                <input type="submit" name="action" value="Approve" class="btn btn-success btn-sm" onclick="return confirm('Approve this change?')">
+                </form>
+                <form action="reject_order_change.php" method="post" style="display:inline;">
+                <input type="hidden" name="request_id" value="<?= $row['id'] ?>">
+                <input type="submit" name="action" value="Reject" class="btn btn-danger btn-sm" onclick="return confirm('Reject this change?')">
+                </form>
+            </div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+
                 </div>
             </div>
         </div>

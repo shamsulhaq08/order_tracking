@@ -73,15 +73,16 @@ $fields = [
     'description' => $_POST['description'] ?? '',
     'file_media' => $file_media,
     'pos_bank_detail' => $_POST['pos_bank_detail'] ?? '',
+    'reason' => $_POST['reason'] ?? $_POST['reason_hidden'] ?? '',
 ];
 
-// Fields to compare numerically
-$numeric_fields = ['online_amount', 'card_amount', 'cash_payment', 'total', 'advance', 'remaining'];
-
-$is_admin = ($_SESSION['user_id'] === 'user_00001');
+// Add missing variables
+$is_admin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
 $requested_by = $_SESSION['user_id'];
 $change_count = 0;
+$numeric_fields = ['online_amount', 'card_amount', 'cash_payment', 'total', 'advance', 'remaining'];
 
+// Loop through each field to check for changes
 foreach ($fields as $key => $new_value) {
     $old_value = $original_order[$key] ?? '';
     $changed = false;

@@ -52,6 +52,9 @@ if (isset($_POST['payment']) && is_array($_POST['payment'])) {
 $card_detail = $_POST['card_detail'] ?? '';
 $description = $_POST['description'] ?? '';
 $ac_detail = $_POST['ac_detail'] ?? '';
+$reason = $_POST['reason'] ?? '';
+
+
 $transaction_id = $_POST['transaction_id'] ?? '';
 $online_amount = isset($_POST['online_amount']) ? (string)$_POST['online_amount'] : '0';
 $card_amount = isset($_POST['card_amount']) ? (string)$_POST['card_amount'] : '0';
@@ -60,6 +63,7 @@ $source_other_text = htmlspecialchars($_POST['source_other_text'] ?? '', ENT_QUO
 $total = isset($_POST['total']) ? (float)$_POST['total'] : 0.0;
 $advance = isset($_POST['advance']) ? (float)$_POST['advance'] : 0.0;
 $remaining = isset($_POST['remaining']) ? (float)$_POST['remaining'] : 0.0;
+
 $status = 'Processing';
 
 // Bank account details
@@ -121,8 +125,8 @@ $sql = "INSERT INTO orders (
     payment, order_maker_id, order_source, description, 
     bank_detail, ac_detail, card_detail, 
     total, advance, remaining, source_other_text,
-    created_by, created_by_name, transaction_id, online_amount, card_amount, file_media, status, cash_payment, whatsapp_number, customer_address, pos_bank_detail
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    created_by, created_by_name, transaction_id, online_amount, card_amount, file_media, status, cash_payment, whatsapp_number, customer_address, pos_bank_detail, reason
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -130,7 +134,7 @@ if (!$stmt) {
 }
 
 $stmt->bind_param(
-    "ssssssisssssdddsissssssdsss",
+    "ssssssisssssdddsissssssdssss",
     $order_date,
     $delivery_date,
     $order_time,
@@ -157,7 +161,8 @@ $stmt->bind_param(
     $cash_payment,
     $whatsapp_number,
     $customer_address,
-    $pos_bank_detail
+    $pos_bank_detail,
+    $reason
 );
 
 if ($stmt->execute()) {

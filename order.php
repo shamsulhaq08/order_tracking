@@ -233,11 +233,25 @@ $created_by_name = $username;
         <div class="form-group">
             <label for="name">Customer Name:</label>
             <input type="text" name="name" id="name" placeholder="Enter customer name" required>
+
         </div>
+
+
         <div class="form-group">
             <label for="contact">Contact #:</label>
-            <input type="number" name="contact" id="contact" placeholder="Enter contact number" required>
+            <input 
+                type="text" 
+                name="contact" 
+                id="contact" 
+                placeholder="Enter contact number" 
+                required
+                pattern="^\+92\d{10}$"
+                maxlength="13"
+            >
+           
         </div>
+        
+
         <div class="form-group">
             <label>Is WhatsApp Number Same as Contact #?</label>
             <div class="radio-group">
@@ -250,6 +264,52 @@ $created_by_name = $username;
             </div>
         </div>
         <script>
+
+            
+        </script>
+        <div class="form-group">
+            <label for="whatsapp_number">WhatsApp:</label>
+            <input 
+                type="text" 
+                name="whatsapp_number" 
+                id="whatsapp_number" 
+                placeholder="Enter WhatsApp number"
+                pattern="^\+92\d{10}$"
+                maxlength="13"
+            >
+             <button type="button" id="check_whatsapp_btn" style="height:40px; padding:0 18px; font-size:15px;">Check Online </button>
+        </div>
+
+          
+
+        <script>
+                 document.addEventListener('DOMContentLoaded', function() {
+            var contactInput = document.getElementById('contact');
+
+            contactInput.addEventListener('input', function(e) {
+                let val = contactInput.value.replace(/\D/g, '');
+
+                // If starts with 0, remove it
+                if (val.startsWith('0')) {
+                    val = val.slice(1);
+                }
+
+                // If starts with 92, add +
+                if (val.startsWith('92')) {
+                    val = '+' + val;
+                }
+                // If not starting with +92, add +92
+                else if (!val.startsWith('+92')) {
+                    val = '+92' + val;
+                }
+
+                // Limit to +92XXXXXXXXXX (13 chars)
+                val = val.slice(0, 13);
+                contactInput.value = val;
+            });
+        });
+
+        
         document.addEventListener('DOMContentLoaded', function() {
             var contactInput = document.getElementById('contact');
             var whatsappInput = document.getElementById('whatsapp_number');
@@ -295,62 +355,90 @@ $created_by_name = $username;
             });
             }
         });
+        document.addEventListener('DOMContentLoaded', function() {
+            var whatsappInput = document.getElementById('whatsapp_number');
+
+            whatsappInput.addEventListener('input', function(e) {
+                let val = whatsappInput.value.replace(/\D/g, '');
+
+                // If starts with 0, remove it
+                if (val.startsWith('0')) {
+                    val = val.slice(1);
+                }
+
+                // If starts with 92, add +
+                if (val.startsWith('92')) {
+                    val = '+' + val;
+                }
+                // If not starting with +92, add +92
+                else if (!val.startsWith('+92')) {
+                    val = '+92' + val;
+                }
+
+                // Limit to +92XXXXXXXXXX (13 chars)
+                val = val.slice(0, 13);
+                whatsappInput.value = val;
+            });
+        });
         </script>
-        <div class="form-group" >
-          
-            <label for="whatsapp_number">WhatsApp:</label>
-            <input 
-                type="number" 
-                name="whatsapp_number" 
-                id="whatsapp_number" 
-                placeholder="Enter WhatsApp number"
-               
-            >
          
-            <button type="button" id="check_whatsapp_btn" style="height:40px; padding:0 18px; font-size:15px;">Check Online </button>
-        </div>
+         
+      
+    <div class="form-group">
+        <label>Order Taker:</label>
+        <input type="text" value="<?= htmlspecialchars($username) ?>" readonly>
+        <input type="hidden" name="order_taker_id" value="<?= htmlspecialchars($user_id) ?>">
+    </div>
 
-        <div class="form-group">
-            <label>Order Taker:</label>
-            <input type="text" value="<?= htmlspecialchars($username) ?>" readonly>
-            <input type="hidden" name="order_taker_id" value="<?= htmlspecialchars($user_id) ?>">
-        </div>
+    <div class="form-group">
+        <label for="order_maker_id">Order Maker:</label>
+        <select name="order_maker_id" id="order_maker_id" required>
+            <?php while ($row = $staff2->fetch_assoc()): ?>
+                <option value="<?= htmlspecialchars($row['id']) ?>"><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></option>
+            <?php endwhile; ?>
+        </select>
+    </div>
 
-        <div class="form-group">
-            <label for="order_maker_id">Order Maker:</label>
-            <select name="order_maker_id" id="order_maker_id" required>
-                <?php while ($row = $staff2->fetch_assoc()): ?>
-                    <option value="<?= htmlspecialchars($row['id']) ?>"><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></option>
-                <?php endwhile; ?>
-            </select>
+ 
+
+    <div class="form-group" style="grid-column: span 3;">
+        <label>Customer Address</label>
+        <input type="text" name="customer_address" id="customer_address" placeholder="Enter customer address">
+    </div>
+
+    <div class="form-group" style="grid-column: span 3;">
+        <label>Order Source:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="source" value="Whatsapp"> Whatsapp</label>
+            <label><input type="radio" name="source" value="Instagram"> Instagram</label>
+            <label><input type="radio" name="source" value="Facebook"> Facebook</label>
+            <label><input type="radio" name="source" value="Physical"> Physical</label>
+            <label>
+                <input type="radio" name="source" value="Other" id="source_other_radio"> Other
+            </label>
         </div>
-                   <!-- Empty form-group to fill the third column here -->
-        <div></div>
+    </div>
+
+    <div class="form-group" style="grid-column: span 3;">
+        <input 
+            type="text" 
+            name="source_other_text" 
+            id="source_other_text" 
+            placeholder="Please specify" 
+            style="display:none; margin-left:10px; min-width:180px;">
+    </div>
+
 
         <div class="form-group" style="grid-column: span 3;">
-        <label>Customer Address</label>
-        <input type="text" name="customer_address" id="customer_address" placeholder="Enter customer address" >
-        </div>
+        <input 
+            type="text" 
+            name="reason" 
+            id="reason" 
+           
+            style="display:none; margin-left:10px; min-width:180px;">
+    </div>
 
-       <div class="form-group" style="grid-column: span 3;">
-           <label>Order Source:</label>
-           <div class="radio-group">
-               <label><input type="radio" name="source" value="Whatsapp"> Whatsapp</label>
-    <label><input type="radio" name="source" value="Instagram"> Instagram</label>
-    <label><input type="radio" name="source" value="Facebook"> Facebook</label>
-    <label><input type="radio" name="source" value="Physical"> Physical</label>
-    <label>
-      <input type="radio" name="source" value="Other" id="source_other_radio"> Other
-    </label>
-    <input 
-      type="text" 
-      name="source_other_text" 
-      id="source_other_text" 
-      placeholder="Please specify" 
-      style="display:none; margin-left:10px; min-width:100%;">
-  </div>
-  <br>
-</div>
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {

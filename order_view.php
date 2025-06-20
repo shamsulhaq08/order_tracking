@@ -288,6 +288,7 @@ if ($result && $result->num_rows > 0):
                             data-remaining="<?= htmlspecialchars($row['remaining']) ?>"
                             data-created_at="<?= htmlspecialchars(date('d-m-Y h:i A', strtotime($row['created_at']))) ?>"
                             data-file_media="<?= htmlspecialchars($row['file_media']) ?>"
+                            data-reason="<?= htmlspecialchars($row['reason']) ?>"
                             data-status="<?= htmlspecialchars($row['status']) ?>"
                             style="cursor:pointer">
                             <td><?= htmlspecialchars($row['id']) ?></td>
@@ -697,6 +698,7 @@ if (!isset($bankdetails)) {
                                 ...(row.getAttribute('data-contact') ? [{label: 'Contact', key: 'contact'}] : []),
                                 ...(row.getAttribute('data-created_by_name') ? [{label: 'Order Taker', key: 'created_by_name'}] : []),
                                 ...(row.getAttribute('data-order_maker_name') ? [{label: 'Order Maker', key: 'order_maker_name'}] : []),
+                                ...(row.getAttribute('data-reason') ? [{label: 'Staff Change Reason', key: 'reason'}] : []),
                                 ...(row.getAttribute('data-order_source') ? [{label: 'Order Source', key: 'order_source'}] : []),
                                 ...(row.getAttribute('data-source_other_text') ? [{label: 'Source Other', key: 'source_other_text'}] : []),
                                 ...(row.getAttribute('data-description') ? [{label: 'Description', key: 'description'}] : []),

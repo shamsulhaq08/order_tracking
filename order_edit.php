@@ -180,7 +180,47 @@ while ($row = $res->fetch_assoc()) {
                 </select>
             </div>
         </div>
-    </div>
+
+        <div class="col-md-12" id="reason_group" style="<?= isset($order['reason']) && $order['reason'] !== '' ? '' : 'display:none;' ?>">
+            <div class="form-group" style="grid-column: span 3;">
+                <label for="reason">Reason for changing Order Maker:</label>
+                <input type="text" name="reason" id="reason" class="form-control" value="<?= htmlspecialchars($order['reason']) ?>">
+                <span id="reason_required" style="color:red; display:none;">* Reason is required</span>
+                <input type="hidden" name="reason_hidden" id="reason_hidden" value="<?= htmlspecialchars($order['reason']) ?>">
+            </div>
+        </div>
+        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var orderMakerSelect = document.getElementById('order_maker_id');
+        var reasonGroup = document.getElementById('reason_group');
+        var reasonInput = document.getElementById('reason');
+        var reasonRequired = document.getElementById('reason_required');
+        var originalValue = orderMakerSelect.getAttribute('data-original') || '<?= $order['order_maker_id'] ?>';
+
+    orderMakerSelect.addEventListener('change', function() {
+    if (this.value !== originalValue) {
+        reasonGroup.style.display = '';
+        reasonRequired.style.display = '';
+    } else {
+        reasonGroup.style.display = 'none';
+        reasonInput.value = '';
+        reasonRequired.style.display = 'none';
+        document.getElementById('reason_hidden').value = ''; // clear hidden too
+    }
+});
+
+        // On form submit, require reason if shown
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (reasonGroup.style.display !== 'none' && reasonInput.value.trim() === '') {
+            alert('Please provide a reason for changing the Order Maker.');
+            reasonInput.focus();
+            e.preventDefault();
+            return false;
+            }
+        });
+        });
+        </script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         var contactInput = document.getElementById('contact');

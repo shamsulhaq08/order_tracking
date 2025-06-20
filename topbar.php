@@ -112,53 +112,126 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                                                     </div>
                                                  </div>
                                               </div>
+
+
                                               <div class="px-1" style="max-height: 350px;" data-simplebar>
-                                                 <?php
-                                                 // Fetch latest pending order update requests
-                                                 $stmt = $conn->prepare("SELECT r.*, u.username, o.customer_name FROM order_update_requests r LEFT JOIN users u ON r.requested_by = u.user_id LEFT JOIN orders o ON r.order_id = o.id WHERE r.status = 'pending' ORDER BY r.requested_at DESC");
-                                                 if ($stmt) {
-                                                    $stmt->execute();
-                                                    $result = $stmt->get_result();
-                                                    if ($result->num_rows > 0) {
-                                                        while ($row = $result->fetch_assoc()) {
-                                                           // Get field display
-                                                           $field = htmlspecialchars($row['field_name']);
-                                                           $old = htmlspecialchars($row['old_value']);
-                                                           $new = htmlspecialchars($row['new_value']);
-                                                           $user = htmlspecialchars($row['username'] ?? $row['requested_by']);
-                                                           $customer = htmlspecialchars($row['customer_name'] ?? '');
-                                                           $date = date('g:i A, j M Y', strtotime($row['requested_at']));
-                                                           echo '<div class="dropdown-item notify-item">';
-                                                           echo '<div><strong>Order #'.$row['order_id'].'</strong> ('.$customer.')</div>';
-                                                           echo '<div>Field: <code>'.$field.'</code></div>';
-                                                           echo '<div>From: <code>'.$old.'</code> &rarr; <code>'.$new.'</code></div>';
-                                                           echo '<div>By: <code>'.$user.'</code> <span class="text-muted small">('.$date.')</span></div>';
-                                                           // Show approve/reject only for admin
-                                                           if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                                                              echo '<div class="mt-1">';
-                                                              echo '<form action="approve_order_change.php" method="post" style="display:inline;">
-                                                                    <input type="hidden" name="request_id" value="'.(int)$row['id'].'">
-                                                                    <input type="submit" name="action" value="Approve" class="btn btn-success btn-sm" onclick="return confirm(\'Approve this change?\')">
-                                                                   </form>
-                                                                   <form action="reject_order_change.php" method="post" style="display:inline;">
-                                                                    <input type="hidden" name="request_id" value="'.(int)$row['id'].'">
-                                                                    <input type="submit" name="action" value="Reject" class="btn btn-danger btn-sm" onclick="return confirm(\'Reject this change?\')">
-                                                                   </form>';
-                                                              echo '</div>';
-                                                           }
-                                                           echo '<hr class="my-1">';
-                                                           echo '</div>';
-                                                        }
-                                                    } else {
-                                                        echo '<div class="dropdown-item text-muted">No pending requests.</div>';
-                                                    }
-                                                    $stmt->close();
-                                                 } else {
-                                                    echo '<div class="dropdown-item text-danger">Error loading notifications.</div>';
-                                                 }
-                                                 ?>
-                                              </div>
-                                            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+    <?php
+        // Field label mapping
+        $field_labels = [
+            'order_date'        => 'Order Date',
+            'delivery_date'     => 'Delivery Date',
+            'order_time'        => 'Order Time',
+            'customer_name'     => 'Customer Name',
+            'contact'           => 'Contact',
+            'customer_address'  => 'Customer Address',
+            'order_maker_id'    => 'Order Maker',
+            'order_source'      => 'Order Source',
+            'source_other_text' => 'Source (Other)',
+            'payment'           => 'Payment',
+            'bank_detail'       => 'Bank Detail',
+            'ac_detail'         => 'Account Detail',
+            'card_detail'       => 'Card Detail',
+            'transaction_id'    => 'Transaction ID',
+            'online_amount'     => 'Online Amount',
+            'card_amount'       => 'Card Amount',
+            'cash_payment'      => 'Cash Payment',
+            'total'             => 'Total',
+            'advance'           => 'Advance',
+            'remaining'         => 'Remaining',
+            'description'       => 'Description',
+            'file_media'        => 'File/Media',
+            'pos_bank_detail'   => 'POS Bank Detail',
+            'reason'            => 'Reason'
+        ];
+
+        // Fetch latest pending order update requests
+        $stmt = $conn->prepare("SELECT r.*, u.username, o.customer_name FROM order_update_requests r LEFT JOIN users u ON r.requested_by = u.user_id LEFT JOIN orders o ON r.order_id = o.id WHERE r.status = 'pending' ORDER BY r.requested_at DESC");
+        if ($stmt) {
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $field_key = $row['field_name'];
+                    $field = isset($field_labels[$field_key]) ? $field_labels[$field_key] : htmlspecialchars($field_key);
+                    $old = htmlspecialchars($row['old_value']);
+                    $new = htmlspecialchars($row['new_value']);
+                    $user = htmlspecialchars($row['username'] ?? $row['requested_by']);
+                    $customer = htmlspecialchars($row['customer_name'] ?? '');
+                    $date = date('g:i A, j M Y', strtotime($row['requested_at']));
+
+                    // If field is order_maker_id, fetch full names
+                    if ($field_key === 'order_maker_id') {
+                        $old_name = $row['old_value'];
+                        $new_name = $row['new_value'];
+                        $old_staff_name = '';
+                        $new_staff_name = '';
+
+                        // Fetch old staff name
+                        if (!empty($old_name) && ctype_digit($old_name)) {
+                            $staff_sql = "SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM staff WHERE id = ?";
+                            $sstmt = $conn->prepare($staff_sql);
+                            $sstmt->bind_param("i", $old_name);
+                            $sstmt->execute();
+                            $sstmt->bind_result($full_name);
+                            if ($sstmt->fetch()) {
+                                $old_staff_name = $full_name;
+                            }
+                            $sstmt->close();
+                        }
+
+                        // Fetch new staff name
+                        if (!empty($new_name) && ctype_digit($new_name)) {
+                            $staff_sql = "SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM staff WHERE id = ?";
+                            $sstmt = $conn->prepare($staff_sql);
+                            $sstmt->bind_param("i", $new_name);
+                            $sstmt->execute();
+                            $sstmt->bind_result($full_name);
+                            if ($sstmt->fetch()) {
+                                $new_staff_name = $full_name;
+                            }
+                            $sstmt->close();
+                        }
+
+                        $old = htmlspecialchars($old_staff_name !== '' ? $old_staff_name : ($old_name !== '' ? $old_name : 'N/A'));
+                        $new = htmlspecialchars($new_staff_name !== '' ? $new_staff_name : ($new_name !== '' ? $new_name : 'N/A'));
+                    }
+
+                    echo '<div class="dropdown-item notify-item">';
+                    echo '<div><strong>Order #'.$row['order_id'].'</strong> ('.$customer.')</div>';
+                    echo '<div>Field: <code>'.$field.'</code></div>';
+                    echo '<div>From: <code>'.$old.'</code> &rarr; <code>'.$new.'</code></div>';
+                    echo '<div>By: <code>'.$user.'</code> <span class="text-muted small">('.$date.')</span></div>';
+
+                    // Show approve/reject only for admin
+                    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+                        echo '<div class="mt-1">';
+                        echo '<form action="approve_order_change.php" method="post" style="display:inline;">
+                                <input type="hidden" name="request_id" value="'.(int)$row['id'].'">
+                                <input type="submit" name="action" value="Approve" class="btn btn-success btn-sm" onclick="return confirm(\'Approve this change?\')">
+                              </form>
+                              <form action="reject_order_change.php" method="post" style="display:inline;">
+                                <input type="hidden" name="request_id" value="'.(int)$row['id'].'">
+                                <input type="submit" name="action" value="Reject" class="btn btn-danger btn-sm" onclick="return confirm(\'Reject this change?\')">
+                              </form>';
+                        echo '</div>';
+                    }
+
+                    echo '<hr class="my-1">';
+                    echo '</div>';
+                }
+            } else {
+                echo '<div class="dropdown-item text-muted">No pending requests.</div>';
+            }
+            $stmt->close();
+        } else {
+            echo '<div class="dropdown-item text-danger">Error loading notifications.</div>';
+        }
+    ?>
+    </div>   
+    
+    
+    
+    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                                             <a href="admin_order_update_requests.php" class="dropdown-item text-center text-primary notify-item border-top border-light py-2">
                                                 View All
                                             </a>
@@ -179,4 +252,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
                             </a>
                         </li>
                         </ul>       </div>
-                                </div>       <!-- ========== Topbar End ========== -->
+                                </div>     
+                                
+                                
+<!-- ========== Topbar End ========== -->
