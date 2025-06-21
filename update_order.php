@@ -55,6 +55,7 @@ $fields = [
     'order_time' => $_POST['time'] ?? '',
     'customer_name' => $_POST['name'] ?? '',
     'contact' => $_POST['contact'] ?? '',
+    'whatsapp_number' => $_POST['whatsapp_number'] ?? '',
     'customer_address' => $_POST['customer_address'] ?? '',
     'order_maker_id' => $_POST['order_maker_id'] ?? '',
     'order_source' => $_POST['source'] ?? '',
@@ -75,9 +76,8 @@ $fields = [
     'pos_bank_detail' => $_POST['pos_bank_detail'] ?? '',
     'reason' => $_POST['reason'] ?? $_POST['reason_hidden'] ?? '',
 ];
-
 // Add missing variables
-$is_admin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
+$is_admin = (isset($_SESSION['user_id']) && $_SESSION['user_id'] === 'user_00001');
 $requested_by = $_SESSION['user_id'];
 $change_count = 0;
 $numeric_fields = ['online_amount', 'card_amount', 'cash_payment', 'total', 'advance', 'remaining'];

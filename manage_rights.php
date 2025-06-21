@@ -60,9 +60,9 @@ $users = mysqli_query($conn, "SELECT * FROM users");
 
                 <!-- Start Content-->
                 <div class="container-fluid">
-                    <br>
+                
 
-                 <h2>Manage User Rights</h2>
+              
   <br>
 <!-- User Dropdown -->
 <div class="mb-3">

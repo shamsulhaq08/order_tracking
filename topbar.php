@@ -123,11 +123,12 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             'order_time'        => 'Order Time',
             'customer_name'     => 'Customer Name',
             'contact'           => 'Contact',
+            'whatsapp_number'   => 'WhatsApp Number',
             'customer_address'  => 'Customer Address',
             'order_maker_id'    => 'Order Maker',
             'order_source'      => 'Order Source',
             'source_other_text' => 'Source (Other)',
-            'payment'           => 'Payment',
+            'payment'           => 'Payment Method',
             'bank_detail'       => 'Bank Detail',
             'ac_detail'         => 'Account Detail',
             'card_detail'       => 'Card Detail',
@@ -141,7 +142,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             'description'       => 'Description',
             'file_media'        => 'File/Media',
             'pos_bank_detail'   => 'POS Bank Detail',
-            'reason'            => 'Reason'
+            'reason'            => 'Order Change Reason'
         ];
 
         // Fetch latest pending order update requests

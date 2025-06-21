@@ -283,31 +283,7 @@ $created_by_name = $username;
           
 
         <script>
-                 document.addEventListener('DOMContentLoaded', function() {
-            var contactInput = document.getElementById('contact');
-
-            contactInput.addEventListener('input', function(e) {
-                let val = contactInput.value.replace(/\D/g, '');
-
-                // If starts with 0, remove it
-                if (val.startsWith('0')) {
-                    val = val.slice(1);
-                }
-
-                // If starts with 92, add +
-                if (val.startsWith('92')) {
-                    val = '+' + val;
-                }
-                // If not starting with +92, add +92
-                else if (!val.startsWith('+92')) {
-                    val = '+92' + val;
-                }
-
-                // Limit to +92XXXXXXXXXX (13 chars)
-                val = val.slice(0, 13);
-                contactInput.value = val;
-            });
-        });
+           
 
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -355,31 +331,7 @@ $created_by_name = $username;
             });
             }
         });
-        document.addEventListener('DOMContentLoaded', function() {
-            var whatsappInput = document.getElementById('whatsapp_number');
-
-            whatsappInput.addEventListener('input', function(e) {
-                let val = whatsappInput.value.replace(/\D/g, '');
-
-                // If starts with 0, remove it
-                if (val.startsWith('0')) {
-                    val = val.slice(1);
-                }
-
-                // If starts with 92, add +
-                if (val.startsWith('92')) {
-                    val = '+' + val;
-                }
-                // If not starting with +92, add +92
-                else if (!val.startsWith('+92')) {
-                    val = '+92' + val;
-                }
-
-                // Limit to +92XXXXXXXXXX (13 chars)
-                val = val.slice(0, 13);
-                whatsappInput.value = val;
-            });
-        });
+      
         </script>
          
          
@@ -414,8 +366,7 @@ $created_by_name = $username;
             <label><input type="radio" name="source" value="Facebook"> Facebook</label>
             <label><input type="radio" name="source" value="Physical"> Physical</label>
             <label>
-                <input type="radio" name="source" value="Other" id="source_other_radio"> Other
-            </label>
+                <input type="radio" name="source" value="Other" id="source_other_radio"> Other </label>
         </div>
     </div>
 

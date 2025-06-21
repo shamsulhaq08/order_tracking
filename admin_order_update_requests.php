@@ -183,11 +183,12 @@ while ($row = $result->fetch_assoc()) {
             'order_time'        => 'Order Time',
             'customer_name'     => 'Customer Name',
             'contact'           => 'Contact',
+            'whatsapp_number'   => 'WhatsApp Number',
             'customer_address'  => 'Customer Address',
             'order_maker_id'    => 'Order Maker',
             'order_source'      => 'Order Source',
             'source_other_text' => 'Source (Other)',
-            'payment'           => 'Payment',
+            'payment'           => 'Payment Method',
             'bank_detail'       => 'Bank Detail',
             'ac_detail'         => 'Account Detail',
             'card_detail'       => 'Card Detail',
@@ -201,7 +202,7 @@ while ($row = $result->fetch_assoc()) {
             'description'       => 'Description',
             'file_media'        => 'File/Media',
             'pos_bank_detail'   => 'POS Bank Detail',
-            'reason'            => 'Reason'
+            'reason'            => 'Order Change Reason'
         ];
         ?>
 
@@ -305,11 +306,12 @@ while ($row = $result->fetch_assoc()) {
                 'order_time'        => 'Order Time',
                 'customer_name'     => 'Customer Name',
                 'contact'           => 'Contact',
+                'whatsapp_number'   => 'WhatsApp Number',
                 'customer_address'  => 'Customer Address',
                 'order_maker_id'    => 'Order Maker',
                 'order_source'      => 'Order Source',
                 'source_other_text' => 'Source (Other)',
-                'payment'           => 'Payment',
+                'payment'           => 'Payment Method',
                 'bank_detail'       => 'Bank Detail',
                 'ac_detail'         => 'Account Detail',
                 'card_detail'       => 'Card Detail',
@@ -323,7 +325,7 @@ while ($row = $result->fetch_assoc()) {
                 'description'       => 'Description',
                 'file_media'        => 'File/Media',
                 'pos_bank_detail'   => 'POS Bank Detail',
-                'reason'            => 'Reason'
+                'reason'            => 'Order Change Reason'
             ];
             ?>
             <p><strong>Field:</strong> <?= htmlspecialchars($field_labels[$row['field_name']] ?? $row['field_name']) ?></p>

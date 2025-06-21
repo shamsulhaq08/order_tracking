@@ -2,12 +2,13 @@
 session_start();
 require 'db_config.php';
 
+
 // Check login session
 if (!isset($_SESSION['user_id'], $_SESSION['username'])) {
     die("User not logged in.");
 }
 
-$user_id = (int)$_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];
 $username = $_SESSION['username'];
 $order_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -28,6 +29,7 @@ if ($result->num_rows === 0) {
 $order = $result->fetch_assoc();
 $stmt->close();
 
+// Fetch staff
 $staff = [];
 $res = $conn->query("SELECT id, first_name FROM staff");
 if (!$res) {
@@ -37,6 +39,22 @@ while ($row = $res->fetch_assoc()) {
     $staff[] = $row;
 }
 
+// Check 'can_allow' permission
+$page_name = basename(__FILE__); // 'order_edit.php'
+$can_allow = 0;
+
+$perm_stmt = $conn->prepare("SELECT can_allow FROM user_permissions WHERE user_id = ? AND page_name = ?");
+$perm_stmt->bind_param("ss", $user_id, $page_name);
+
+$perm_stmt->execute();
+$perm_result = $perm_stmt->get_result();
+if ($perm_row = $perm_result->fetch_assoc()) {
+    $can_allow = (int)$perm_row['can_allow'];
+}
+$perm_stmt->close();
+
+// echo "Logged in as: $user_id<br>";
+// echo "Permission: can_allow = $can_allow<br>";
 ?>
 
 <!DOCTYPE html>
@@ -125,19 +143,33 @@ while ($row = $res->fetch_assoc()) {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label for="name">Name:</label>
-                                                    <input type="text" name="name" id="name" class="form-control" value="<?= htmlspecialchars($order['customer_name']) ?>">
+            <input 
+                type="text" 
+                name="name" 
+                id="name" 
+                class="form-control <?= $can_allow ? '' : 'bg-light' ?>" 
+                value="<?= htmlspecialchars($order['customer_name']) ?>" 
+                <?= $can_allow ? '' : 'readonly' ?>>
+
                                                 </div>
                                             </div>
-                                       
 
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label for="contact">Contact:</label>
-                                                    <input type="text" name="contact" id="contact" class="form-control" value="<?= htmlspecialchars($order['contact']) ?>">
+                                                    <input 
+                                                        type="text" 
+                                                        name="contact" 
+                                                        id="contact" 
+                                                        class="form-control <?= $can_allow ? '' : 'bg-light' ?>" 
+                                                        value="<?= htmlspecialchars($order['contact']) ?>" 
+                                                        <?= $can_allow ? '' : 'readonly' ?>>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -278,19 +310,19 @@ while ($row = $res->fetch_assoc()) {
                 <label>Source:</label>
                 <div class="radio-group">
                     <label>
-                        <input type="radio" name="source" value="Whatsapp" <?= $order['order_source'] == 'Whatsapp' ? 'checked' : '' ?>> Whatsapp
+                        <input type="radio" name="source" value="Whatsapp" <?= $order['order_source'] == 'Whatsapp' ? 'checked' : '' ?> <?= $can_allow ? '' : 'disabled' ?>> Whatsapp
                     </label>
                     <label>
-                        <input type="radio" name="source" value="Instagram" <?= $order['order_source'] == 'Instagram' ? 'checked' : '' ?>> Instagram
+                        <input type="radio" name="source" value="Instagram" <?= $order['order_source'] == 'Instagram' ? 'checked' : '' ?> <?= $can_allow ? '' : 'disabled' ?>> Instagram
                     </label>
                     <label>
-                        <input type="radio" name="source" value="Facebook" <?= $order['order_source'] == 'Facebook' ? 'checked' : '' ?>> Facebook
+                        <input type="radio" name="source" value="Facebook" <?= $order['order_source'] == 'Facebook' ? 'checked' : '' ?> <?= $can_allow ? '' : 'disabled' ?>> Facebook
                     </label>
                     <label>
-                        <input type="radio" name="source" value="Physical" <?= $order['order_source'] == 'Physical' ? 'checked' : '' ?>> Physical
+                        <input type="radio" name="source" value="Physical" <?= $order['order_source'] == 'Physical' ? 'checked' : '' ?> <?= $can_allow ? '' : 'disabled' ?>> Physical
                     </label>
                     <label>
-                        <input type="radio" name="source" value="Other" id="source_other_radio" <?= $order['order_source'] == 'Other' ? 'checked' : '' ?>> Other
+                        <input type="radio" name="source" value="Other" id="source_other_radio" <?= $order['order_source'] == 'Other' ? 'checked' : '' ?> <?= $can_allow ? '' : 'disabled' ?>> Other
                     </label>
                     <input 
                         type="text" 
@@ -299,6 +331,7 @@ while ($row = $res->fetch_assoc()) {
                         placeholder="Please specify" 
                         style="margin-left:10px; min-width:180px;<?= $order['order_source'] == 'Other' ? '' : 'display:none;' ?>"
                         value="<?= htmlspecialchars($order['source_other_text']) ?>"
+                        <?= $can_allow ? '' : 'readonly' ?>
                     >
                 </div>
             </div>
@@ -316,7 +349,14 @@ while ($row = $res->fetch_assoc()) {
             <div class="form-group">
                   <br>
                 <label for="file_media">Upload More Media Files:</label>
-                <input type="file" name="file_media[]" id="file_media" class="form-control" multiple>
+                <input 
+                    type="file" 
+                    name="file_media[]" 
+                    id="file_media" 
+                    class="form-control" 
+                    multiple
+                    <?= $can_allow ? '' : 'disabled' ?>
+                >
             </div>
               <div class="form-group">
                 <label>Current Files:</label>
