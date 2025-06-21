@@ -83,15 +83,29 @@ $users = mysqli_query($conn, "SELECT * FROM users");
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-$('#userSelect').on('change', function(){
-    var userId = $(this).val();
-    if(userId != "") {
-        $.post('load_permissions.php', { user_id: userId }, function(response){
-            $('#permissionsTable').html(response);
-        });
-    } else {
-        $('#permissionsTable').html('');
+$(document).ready(function() {
+    // Restore selected user from localStorage
+    var savedUserId = localStorage.getItem('selectedUserId');
+    if(savedUserId) {
+        $('#userSelect').val(savedUserId);
+        if(savedUserId != "") {
+            $.post('load_permissions.php', { user_id: savedUserId }, function(response){
+                $('#permissionsTable').html(response);
+            });
+        }
     }
+
+    $('#userSelect').on('change', function(){
+        var userId = $(this).val();
+        localStorage.setItem('selectedUserId', userId);
+        if(userId != "") {
+            $.post('load_permissions.php', { user_id: userId }, function(response){
+                $('#permissionsTable').html(response);
+            });
+        } else {
+            $('#permissionsTable').html('');
+        }
+    });
 });
 </script>
 

@@ -37,7 +37,7 @@ echo "<thead class='table-dark'><tr>
     <th scope='col'>Page</th>
     <th scope='col'>Page View</th>
     <th scope='col'>Page Edit</th>
-    <th scope='col'>Edit Allow</th>
+    <th scope='col'>Fields Edit Allow</th>
       </tr></thead><tbody>";
 
 foreach($pages as $page) {
@@ -116,9 +116,9 @@ $('.toggle').on('change', function(){
         value: value
     }, function(response){
         if (value === 1) {
-            alert('Permission allowed. ' + username + ' can now ' + permission + '');
+            //alert('Permission allowed. ' + username + ' can now ' + permission + '');
         } else {
-            alert('Permission not allowed.');
+            //alert('Permission not allowed.');
         }
     });
 });
