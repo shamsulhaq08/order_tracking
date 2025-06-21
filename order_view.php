@@ -1203,7 +1203,7 @@ document.addEventListener('DOMContentLoaded', function () {
         alert(`You can only pay up to ${total}.`);
         if (cashAmountInput === document.activeElement) {
             cashAmountInput.value = '';
-            cashAmountInput.dispatchEvent(new Event('input')); // 🔄 Trigger input event again
+            cashAmountInput.dispatchEvent(new Event('input'));
         }
         if (onlineAmountInput === document.activeElement) {
             onlineAmountInput.value = '';
@@ -1286,42 +1286,41 @@ document.addEventListener('DOMContentLoaded', function () {
         const payments = [];
 
         if (cashCheckbox.checked) {
-            const amount = parseFloat(cashAmountInput.value);
-            if (!amount || amount <= 0) return alert('Enter valid cash amount.');
-            payments.push({
-                payment_type: 'Cash',
-                amount: amount,
-                cash_payment: amount
-            });
-        }
+    const amount = parseFloat(cashAmountInput.value);
+    if (!amount || amount <= 0) return alert('Enter valid cash amount.');
+    payments.push({
+        payment_type: 'Cash',
+        amount: amount
+    });
+}
 
-        if (bankCheckbox.checked && onlineCheckbox.checked) {
-            const amount = parseFloat(onlineAmountInput.value);
-            if (!amount || amount <= 0) return alert('Enter valid online amount.');
-            if (!fieldMap.bank_detail.value) return alert('Select bank for online payment.');
-            payments.push({
-                payment_type: 'Online',
-                amount: amount,
-                bank_detail: fieldMap.bank_detail.value,
-                ac_detail: fieldMap.ac_detail.value,
-                transaction_id: fieldMap.transaction_id.value
-            });
-        }
+if (bankCheckbox.checked && onlineCheckbox.checked) {
+    const amount = parseFloat(onlineAmountInput.value);
+    if (!amount || amount <= 0) return alert('Enter valid online amount.');
+    if (!fieldMap.bank_detail.value) return alert('Select bank for online payment.');
+    payments.push({
+        payment_type: 'Online',
+        amount: amount,
+        bank_detail: fieldMap.bank_detail.value,
+        ac_detail: fieldMap.ac_detail.value,
+        transaction_id: fieldMap.transaction_id.value
+    });
+}
 
-        if (bankCheckbox.checked && cardCheckbox.checked) {
-            const amount = parseFloat(cardAmountInput.value);
-            if (!amount || amount <= 0) return alert('Enter valid card amount.');
-            if (!fieldMap.pos_bank_detail.value) return alert('Select POS bank.');
-            if (fieldMap.card_detail.value.length !== 4) return alert('Enter last 4 digits of card.');
-            payments.push({
-                payment_type: 'Card',
-                amount: amount,
-                card_amount: amount,
-                card_detail: fieldMap.card_detail.value,
-                pos_bank_detail: fieldMap.pos_bank_detail.value,
-                bank_detail: fieldMap.pos_bank_detail.value // reuse field
-            });
-        }
+if (bankCheckbox.checked && cardCheckbox.checked) {
+    const amount = parseFloat(cardAmountInput.value);
+    if (!amount || amount <= 0) return alert('Enter valid card amount.');
+    if (!fieldMap.pos_bank_detail.value) return alert('Select POS bank.');
+    if (fieldMap.card_detail.value.length !== 4) return alert('Enter last 4 digits of card.');
+    payments.push({
+        payment_type: 'Card',
+        amount: amount,
+        card_detail: fieldMap.card_detail.value,
+        pos_bank_detail: fieldMap.pos_bank_detail.value,
+        bank_detail: fieldMap.pos_bank_detail.value // reuse field
+    });
+}
+
 
         if (payments.length === 0) return alert('Select at least one payment method.');
 

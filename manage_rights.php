@@ -60,8 +60,6 @@ $users = mysqli_query($conn, "SELECT * FROM users");
 
                 <!-- Start Content-->
                 <div class="container-fluid">
-                
-
               
   <br>
 <!-- User Dropdown -->

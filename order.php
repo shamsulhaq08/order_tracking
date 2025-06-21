@@ -246,7 +246,7 @@ $created_by_name = $username;
                 placeholder="Enter contact number" 
                 required
                 pattern="^\+92\d{10}$"
-                maxlength="13"
+                
             >
            
         </div>
